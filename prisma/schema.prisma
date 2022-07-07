@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Example {
+  id String @id @default(cuid())
+}
+
+// Necessary for Next auth
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Sex {
+  Male
+  Female
+}
+
+model Student {
+  id          Int              @id @default(autoincrement())
+  name        String //姓名
+  sex         Sex // 年龄
+  age         Int // 年龄
+  occupation  String // 职业
+  tags        StudentsOnTags[]
+  description String // 描述
+  schedule    String // 作息时间
+  created_at  DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Tag {
+  id       Int              @id @default(autoincrement())
+  name     String
+  students StudentsOnTags[]
+}
+
+model StudentsOnTags {
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  tagId      Int // relation scalar field (used in the `@relation` attribute above)
+  student    Student  @relation(fields: [studentId], references: [id])
+  studentId  Int // relation scalar field (used in the `@relation` attribute above)
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@id([tagId, studentId])
+}
