@@ -67,13 +67,13 @@ enum Sex {
 model Student {
   id          Int              @id @default(autoincrement())
   name        String //姓名
-  sex         Sex // 年龄
+  sex         Sex // 性别
   age         Int // 年龄
   occupation  String // 职业
   tags        StudentsOnTags[]
   description String // 描述
   schedule    String // 作息时间
-  created_at  DateTime         @default(now())
+  createdAt  DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 }
 

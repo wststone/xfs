@@ -1,10 +1,23 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
+import { useForm } from "react-hook-form";
+
+type FormData = {
+	name: string;
+	sex: boolean;
+	age: number;
+	occupation: string;
+	description: string;
+	schedule: string;
+};
 
 const Home: NextPage = () => {
-	const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
-
+	const hello = trpc.useQuery(["student.hello"]);
+	const { data: allStudents } = trpc.useQuery(["student.getAll"]);
+	const {} = trpc.useMutation(["student.create"]);
+	const { handleSubmit } = useForm<FormData>({ defaultValues: {} });
+	const onSubmit = handleSubmit(data => console.log(data));
 	return (
 		<>
 			<Head>
@@ -13,7 +26,49 @@ const Home: NextPage = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<h1 className="text-6xl">小肥🐭</h1>
-			<button className="">添加学生</button>
+			<form onSubmit={onSubmit} className="flex flex-col space-y-1 p-1">
+				<input
+					type="text"
+					placeholder="姓名"
+					className="border border-stone-100 p-1"
+				/>
+				<input
+					type="text"
+					placeholder="性别"
+					className="border border-stone-100 p-1"
+				/>
+				<input
+					type="number"
+					placeholder="年龄"
+					className="border border-stone-100 p-1"
+				/>
+				<input
+					type="text"
+					placeholder="职业"
+					className="border border-stone-100 p-1"
+				/>
+				<input
+					type="text"
+					placeholder="描述"
+					className="border border-stone-100 p-1"
+				/>
+				<input
+					type="text"
+					placeholder="作息时间"
+					className="border border-stone-100 p-1"
+				/>
+				<button
+					type="submit"
+					className="text-red-500 bg-red-100 p-2 rounded"
+					onClick={() => {}}
+				>
+					添加学生
+				</button>
+			</form>
+
+			{allStudents?.map(student => (
+				<div key={student.id}>{student.name}</div>
+			))}
 		</>
 	);
 };
